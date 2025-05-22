@@ -14,8 +14,7 @@ export default async function handler(req, res) {
   const breed = cleaned.startsWith('poule ') ? cleaned.slice(6).trim() : cleaned;
   const breedCapitalized = breed.charAt(0).toUpperCase() + breed.slice(1);
 
-  const prompt = `A vintage naturalist illustration of a french hen, breed ${breedCapitalized}, realistic feathers and anatomy, elegant profile pose, intricate feather texture, small red comb, NO TEXT at all, no watermark, pure white background #FFFFFF, 19th-century ornithological art style.`;
-
+  const prompt = `Vintage naturalist illustration of a hen from the French breed ${breedCapitalized}, full body side view, realistic anatomy, intricate feather detail, elegant posture, no text, no watermark, pure white background, style of 19th-century ornithological art`;
   try {
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
