@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const breed = cleaned.startsWith('poule ') ? cleaned.slice(6).trim() : cleaned;
   const breedCapitalized = breed.charAt(0).toUpperCase() + breed.slice(1);
 
-  const prompt = `A vintage naturalist illustration of a ${breedCapitalized} hen, elegant pose, soft detailed feathers, vibrant red comb, in profile, isolated on white background, in the style of 19th-century ornithological art.`;
+  const prompt = `A vintage naturalist illustration of a ${breedCapitalized} hen, realistic feathers and anatomy, elegant profile pose, intricate feather texture, red comb, NO TEXT, no watermark, pure white background, 19th-century ornithological art style.`;
 
   try {
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'dall-e-3',
-        prompt,
+        prompt: prompt,
         n: 1,
         size: '1024x1024'
       })
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     const data = await dalleResponse.json();
     const imageUrl = data.data[0].url;
 
-    return res.status(200).json({ url: imageUrl });
+    return res.status(200).json({ url: imageUrl, prompt });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
