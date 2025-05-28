@@ -11,8 +11,7 @@ export default async function handler(req, res) {
   }
 
   const cleaned = title.trim().toLowerCase();
-  const prompt = `Génère une Illustration à l’aquarelle d’une bouteille d’huile essentielle de ${cleaned}, en verre ambré avec un compte-gouttes noir. Autour de la bouteille, des éléments naturels évoquant l’huile essentielle de ${cleaned}, dans les tons de ces éléments. Un ruban de couleur dans les mêmes tons est délicatement noué autour du flacon. Le style est doux, naturel, artistique, avec un fond blanc pur, dans l’esprit des planches botaniques vintage, sans texte ni watermark.`;
-
+  const prompt = `Génère une Illustration à l’aquarelle d’une bouteille d’huile essentielle de ${cleaned}, en verre ambré avec un compte-gouttes noir. Autour de la bouteille, des éléments naturels évoquant l’huile essentielle de ${cleaned}, dans les tons de ces éléments. Un ruban de couleur dans les mêmes tons est délicatement noué AUTOUR du flacon. Le style est doux, naturel, artistique, avec un fond blanc pur, dans l’esprit des planches botaniques vintage, sans aucun texte ni watermark.`;
   try {
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
