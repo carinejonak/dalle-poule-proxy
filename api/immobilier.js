@@ -1,3 +1,8 @@
+export const config = {
+  runtime: 'edge',
+  maxDuration: 30
+};
+
 export default async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY;
   const { title } = req.query;
