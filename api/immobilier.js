@@ -1,5 +1,5 @@
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs',
   maxDuration: 30
 };
 
