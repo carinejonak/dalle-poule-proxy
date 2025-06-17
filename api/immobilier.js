@@ -1,24 +1,18 @@
 export default async function handler(req, res) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  const { title } = req.query;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' });
+  }
+
+  if (!title) {
+    return res.status(400).json({ error: 'Le paramètre "title" est requis.' });
+  }
+
+  const cleaned = title.trim().toLowerCase();
+  const prompt = `Génère une Illustration à l’aquarelle d’une bouteille d’huile essentielle de ${cleaned}, en verre ambré avec un compte-gouttes noir. Autour de la bouteille, des éléments naturels évoquant l’huile essentielle de ${cleaned}, dans les tons de ces éléments. Un ruban de couleur dans les mêmes tons est délicatement noué AUTOUR du flacon. Le style est doux, naturel, artistique, avec un fond blanc pur, dans l’esprit des planches botaniques vintage, sans aucun texte ni watermark.`;
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    // Reconstruire l'URL complète pour accéder aux paramètres
-    const fullUrl = `https://${req.headers.host}${req.url}`;
-    const url = new URL(fullUrl);
-    const title = url.searchParams.get("title");
-
-    if (!apiKey) {
-      return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' });
-    }
-
-    if (!title) {
-      return res.status(400).json({ error: 'Le paramètre "title" est requis.' });
-    }
-
-    const cleaned = title.trim().toLowerCase().replace(/[“”‘’«»]/g, '');
-
-    const prompt = `Illustration réaliste au format horizontal sur le thème de l'immobilier, ambiance professionnelle, lumière naturelle. Cette image illustre l'article : "${cleaned}". Aucun texte, aucun filigrane.`;
-
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -29,7 +23,7 @@ export default async function handler(req, res) {
         model: 'dall-e-3',
         prompt: prompt,
         n: 1,
-        size: '1792x1024'
+        size: '1024x1024'
       })
     });
 
@@ -43,6 +37,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ url: imageUrl, prompt });
   } catch (error) {
-    return res.status(500).json({ error: 'Unhandled server error', message: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }
