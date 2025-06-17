@@ -1,4 +1,3 @@
-// /api/immo.js
 export default async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY;
   const { title } = req.query;
@@ -11,24 +10,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Le paramètre "title" est requis.' });
   }
 
-  // ⚠️ On retire la ponctuation pour éviter les « ?&£$#% » qui font planter l’API
-  const cleaned = title.replace(/[^\p{L}\p{N}\s]/gu, '').trim();
-
-  const prompt = `Génère une illustration réaliste au format horizontal sur le thème de l'immobilier, ambiance professionnelle, lumière naturelle. Cette image illustre l'article : "${cleaned}". Aucun texte, aucun filigrane.`;
-
+  const cleaned = title.trim().toLowerCase();
+  const prompt = `Génère une illustration réaliste au format horizontal sur le thème de l'immobilier, ambiance professionnelle, lumière naturelle. Cette image illustre l'article : ${cleaned}. Aucun texte ni watermark.`;
   try {
     const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': \`Bearer \${apiKey}\`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'dall-e-3',
-        prompt,
+        prompt: prompt,
         n: 1,
-        size: '1792x1024',
-      }),
+        size: '1024x1024'
+      })
     });
 
     if (!dalleResponse.ok) {
