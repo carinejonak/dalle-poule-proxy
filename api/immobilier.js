@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   const { title } = req.query;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' });
+    return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' }); 
   }
 
   if (!title) {
