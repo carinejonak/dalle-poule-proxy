@@ -1,8 +1,3 @@
-export const config = {
-  runtime: 'nodejs',
-  maxDuration: 30
-};
-
 export default async function handler(req, res) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
