@@ -1,45 +1,44 @@
-jQuery(document).ready(function($) {
-  const $button = $('<button>')
-    .text('🎨 Générer une image à la une')
-    .css({
-      marginTop: '10px',
-      padding: '10px 15px',
-      backgroundColor: '#6271aa',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer'
-    })
-    .click(async function() {
-      const title = $('#title').val();
-      if (!title) {
-        alert('Veuillez d’abord ajouter un titre à l’article.');
-        return;
-      }
+export default async function handler(req, res) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  const { title } = req.query;
 
-      const apiUrl = `https://dalle-poule-proxy-v1.vercel.app/api/immobilier?title=${encodeURIComponent(title)}`;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' });
+  }
 
-      $(this).prop('disabled', true).text('Génération en cours...');
+  if (!title) {
+    return res.status(400).json({ error: 'Le paramètre "title" est requis.' });
+  }
 
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        if (data.url) {
-          // Met à jour le champ "Image mise en avant"
-          $('#set-post-thumbnail').parent().find('img').attr('src', data.url);
-          $('input[name="thumbnail_input_field"]').val(data.url);
-          $('#remove-post-thumbnail').click(); // supprime l’ancienne
-        } else {
-          alert("Erreur lors de la génération de l'image.");
-        }
-      } catch (err) {
-        alert("Erreur lors de la requête.");
-        console.error(err);
-      }
+  const cleaned = title.trim().toLowerCase();
 
-      $(this).prop('disabled', false).text('🎨 Générer une image à la une');
+  const prompt = `Illustration réaliste au format horizontal sur le thème de l'immobilier, ambiance professionnelle, lumière naturelle. Cette image illustre l'article : "${title}". Aucun texte, aucun filigrane.`;
+
+  try {
+    const dalleResponse = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'dall-e-3',
+        prompt: prompt,
+        n: 1,
+        size: '1200x800'
+      })
     });
 
-  $('#postimagediv .inside').append($button);
-});
+    if (!dalleResponse.ok) {
+      const errorDetails = await dalleResponse.text();
+      return res.status(500).json({ error: 'OpenAI API error', details: errorDetails });
+    }
 
+    const data = await dalleResponse.json();
+    const imageUrl = data.data[0].url;
+
+    return res.status(200).json({ url: imageUrl, prompt });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
