@@ -6,7 +6,9 @@ export const config = {
 export default async function handler(req, res) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
-    const { title } = req.query;
+
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const title = url.searchParams.get("title");
 
     if (!apiKey) {
       return res.status(500).json({ error: 'Missing OpenAI API key in environment variables' });
