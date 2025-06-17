@@ -7,7 +7,9 @@ export default async function handler(req, res) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
 
-    const url = new URL(req.url, `http://${req.headers.host}`);
+    // Reconstruire l'URL complète pour accéder aux paramètres
+    const fullUrl = `https://${req.headers.host}${req.url}`;
+    const url = new URL(fullUrl);
     const title = url.searchParams.get("title");
 
     if (!apiKey) {
